@@ -11,7 +11,7 @@ public class GunController : MonoBehaviour
     private GameObject _hardPoint;
 
     [SerializeField]
-    private GameObject _muzzleFlash;
+    private Pool _muzzleFlashes;
 
     private float _delay;
 
@@ -32,9 +32,16 @@ public class GunController : MonoBehaviour
             if (_delay <= 0.0f)
             {
                 _delay = 60.0f / _roundsPerMinute;
-                var muzzleFlash = Instantiate(_muzzleFlash, _hardPoint.transform);
-                Destroy(muzzleFlash, 0.375f * 60.0f / _roundsPerMinute);
+                var muzzleFlash = _muzzleFlashes.Grab(_hardPoint.transform);
+                StartCoroutine(ReturnMuzzleFlash(muzzleFlash));
+
             }
         }
     }
+    private IEnumerator ReturnMuzzleFlash(GameObject muzzleFlash)
+    {
+        yield return new WaitForSeconds(0.375f * 60.0f / _roundsPerMinute);
+        _muzzleFlashes.Return(muzzleFlash);
+    }
+
 }
