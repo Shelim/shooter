@@ -35,7 +35,8 @@ public class GunController : MonoBehaviour
                 var muzzleFlash = _muzzleFlashes.Grab(_hardPoint.transform);
                 StartCoroutine(ReturnMuzzleFlash(muzzleFlash));
                 //FireProjectileLinecast();
-                FireProjectileCapsule();
+                //FireProjectileCapsule();
+                FireHitscan();
             }
         }
     }
@@ -70,6 +71,21 @@ public class GunController : MonoBehaviour
         projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules);
         var random = Random.insideUnitCircle;
         projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
+    }
+
+    [SerializeField]
+    private LayerMask _layerMaskHitScan;
+
+    private void FireHitscan()
+    {
+        var random = Random.insideUnitCircle;
+        var rotation = Quaternion.Euler(_spread * random.x, _spread * random.y, 0.0f);
+        var forward = rotation * Vector3.forward;
+        var ray = new Ray(_hardPoint.transform.position, _hardPoint.transform.TransformDirection(forward));
+        if (Physics.Raycast(ray, out var hit, 1000.0f, _layerMaskHitScan, QueryTriggerInteraction.Ignore))
+        {
+            // Hit!
+        }
     }
 
 }
