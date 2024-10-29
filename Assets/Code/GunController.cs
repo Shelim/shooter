@@ -34,7 +34,8 @@ public class GunController : MonoBehaviour
                 _delay = 60.0f / _roundsPerMinute;
                 var muzzleFlash = _muzzleFlashes.Grab(_hardPoint.transform);
                 StartCoroutine(ReturnMuzzleFlash(muzzleFlash));
-                FireProjectileLinecast();
+                //FireProjectileLinecast();
+                FireProjectileCapsule();
             }
         }
     }
@@ -55,6 +56,18 @@ public class GunController : MonoBehaviour
         var projectile = _projectileLinecasts.Grab(_hardPoint.transform);
         projectile.transform.SetParent(null, true);
         projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts);
+        var random = Random.insideUnitCircle;
+        projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
+    }
+
+    [SerializeField]
+    private Pool _projectileCapsules;
+
+    private void FireProjectileCapsule()
+    {
+        var projectile = _projectileCapsules.Grab(_hardPoint.transform);
+        projectile.transform.SetParent(null, true);
+        projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules);
         var random = Random.insideUnitCircle;
         projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
     }
