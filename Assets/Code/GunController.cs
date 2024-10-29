@@ -34,7 +34,7 @@ public class GunController : MonoBehaviour
                 _delay = 60.0f / _roundsPerMinute;
                 var muzzleFlash = _muzzleFlashes.Grab(_hardPoint.transform);
                 StartCoroutine(ReturnMuzzleFlash(muzzleFlash));
-
+                FireProjectileLinecast();
             }
         }
     }
@@ -42,6 +42,21 @@ public class GunController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.375f * 60.0f / _roundsPerMinute);
         _muzzleFlashes.Return(muzzleFlash);
+    }
+
+    [SerializeField]
+    private Pool _projectileLinecasts;
+
+    [SerializeField, Min(0.0f), Tooltip("In degrees")]
+    private float _spread = 3.0f;
+
+    private void FireProjectileLinecast()
+    {
+        var projectile = _projectileLinecasts.Grab(_hardPoint.transform);
+        projectile.transform.SetParent(null, true);
+        projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts);
+        var random = Random.insideUnitCircle;
+        projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
     }
 
 }
