@@ -9,6 +9,10 @@ public class MaterialDefinition : MonoBehaviour
     public MaterialKind Kind => _kind;
 
     [SerializeField]
+    private MaterialDefinitionGlobal _definitionGlobal;
+    public MaterialDefinitionGlobal DefinitionGlobal => _definitionGlobal;
+
+    [SerializeField]
     private Pool _hitPool;
     [SerializeField]
     private float _hitTimeToLive;

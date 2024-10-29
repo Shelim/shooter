@@ -182,6 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 5
+  _definitionGlobal: {fileID: 11400000, guid: d14e2ad2168c9844f96f2142f23a1e0b, type: 2}
   _hitPool: {fileID: 240214113}
   _hitTimeToLive: 3
 --- !u!1 &351309044
@@ -462,6 +463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 1
+  _definitionGlobal: {fileID: 11400000, guid: 925adf54138ac6a4181fda7415e3ff95, type: 2}
   _hitPool: {fileID: 459920864}
   _hitTimeToLive: 3
 --- !u!1 &680631407
@@ -722,6 +724,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 3
+  _definitionGlobal: {fileID: 11400000, guid: a5dc863bcebd92241ab19db4694d4d4a, type: 2}
   _hitPool: {fileID: 1115995021}
   _hitTimeToLive: 3
 --- !u!1 &1236581893
@@ -784,6 +787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 6
+  _definitionGlobal: {fileID: 11400000, guid: 9697f008fd7d5d646aa5d0a63f386e25, type: 2}
   _hitPool: {fileID: 1236581895}
   _hitTimeToLive: 3
 --- !u!1 &1243781005
@@ -1105,6 +1109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 4
+  _definitionGlobal: {fileID: 11400000, guid: 959bad2179f532048976a51adc7af64c, type: 2}
   _hitPool: {fileID: 1858848155}
   _hitTimeToLive: 3
 --- !u!1 &1903310259
@@ -1167,6 +1172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _kind: 2
+  _definitionGlobal: {fileID: 11400000, guid: cf4034b7ed57bdd449cd8aa9563360e4, type: 2}
   _hitPool: {fileID: 1903310261}
   _hitTimeToLive: 3
 --- !u!1 &1961785112

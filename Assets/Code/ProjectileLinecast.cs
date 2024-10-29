@@ -42,7 +42,28 @@ public class ProjectileLinecast : MonoBehaviour
             if (madeWith != null)
             {
                 _materialDefinitions.Hit(madeWith.Kind, hit.point, hit.normal);
+                return;
             }
+
+            Renderer renderer = hit.collider.GetComponent<Renderer>();
+            MeshFilter meshFilter = hit.collider.GetComponent<MeshFilter>();
+            if (renderer != null && meshFilter != null)
+            {
+                Mesh mesh = meshFilter.mesh;
+                var idx = hit.triangleIndex;
+                for (var i = 0; i < mesh.subMeshCount; i++)
+                {
+                    var tris = mesh.GetTriangles(i);
+                    if (idx < tris.Length)
+                    {
+                        var material = renderer.sharedMaterials[i];
+                        _materialDefinitions.Hit(material, hit.point, hit.normal);
+                        return;
+                    }
+                    idx -= tris.Length;
+                }
+            }
+
             return;
         }
         _timeToLive -= Time.deltaTime;
