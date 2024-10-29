@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Assign child main camera")]
     private Camera _camera;
     [SerializeField]
+    private GunController _gunController;
+    [SerializeField]
     private BobController _bobController;
 
     private CharacterController _characterController;
@@ -58,6 +60,7 @@ public class PlayerController : MonoBehaviour
         }
 
         _bobController.WalkingSpeed = movementDesired.magnitude;
+        _gunController.IsMoving = _bobController.WalkingSpeed > 0.25f;
 
         // Calculate final planar velocity and move actual velocity toward it
         _velocityPlanar = Vector3.MoveTowards(_velocityPlanar, movementDesired * _walkSpeed, _walkAcceleration * Time.deltaTime);

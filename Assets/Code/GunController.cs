@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class GunController : MonoBehaviour
@@ -16,7 +17,19 @@ public class GunController : MonoBehaviour
     [SerializeField]
     private MaterialDefinitions _materialDefinitions;
 
+    [SerializeField]
+    private HudCrosshair _hudCrosshair;
+    [SerializeField]
+    private float _spreadCooldown = 0.65f;
+    [SerializeField]
+    private float _spreadWindup = 0.125f;
+    [SerializeField]
+    private float _spreadOnFire = 0.25f;
+
+    public bool IsMoving { get; set; }
+
     private float _delay;
+    private float _spreadProgress;
 
     private void Start()
     {
@@ -30,6 +43,11 @@ public class GunController : MonoBehaviour
             _delay -= Time.deltaTime;
         }
 
+        if (IsMoving)
+            _spreadProgress = Mathf.MoveTowards(_spreadProgress, 1.0f, Time.deltaTime / _spreadWindup);
+        else
+            _spreadProgress = Mathf.MoveTowards(_spreadProgress, 0.0f, Time.deltaTime / _spreadCooldown);
+
         if (Input.GetButton("Fire1"))
         {
             if (_delay <= 0.0f)
@@ -40,8 +58,10 @@ public class GunController : MonoBehaviour
                 //FireProjectileLinecast();
                 //FireProjectileCapsule();
                 FireHitscan();
+                _spreadProgress = Mathf.MoveTowards(_spreadProgress, 1.0f, _spreadOnFire);
             }
         }
+        _hudCrosshair.Spread = _spreadProgress;
     }
     private IEnumerator ReturnMuzzleFlash(GameObject muzzleFlash)
     {
@@ -53,7 +73,9 @@ public class GunController : MonoBehaviour
     private Pool _projectileLinecasts;
 
     [SerializeField, Min(0.0f), Tooltip("In degrees")]
-    private float _spread = 3.0f;
+    private float _spreadMin = 3.0f;
+    [SerializeField, Min(0.0f), Tooltip("In degrees")]
+    private float _spreadMax = 4.5f;
 
     private void FireProjectileLinecast()
     {
@@ -61,7 +83,8 @@ public class GunController : MonoBehaviour
         projectile.transform.SetParent(null, true);
         projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts, _materialDefinitions);
         var random = Random.insideUnitCircle;
-        projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
+        var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
+        projectile.transform.Rotate(spread * random.x, spread * random.y, 0.0f);
     }
 
     [SerializeField]
@@ -73,7 +96,8 @@ public class GunController : MonoBehaviour
         projectile.transform.SetParent(null, true);
         projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules, _materialDefinitions);
         var random = Random.insideUnitCircle;
-        projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
+        var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
+        projectile.transform.Rotate(spread * random.x, spread * random.y, 0.0f);
     }
 
     [SerializeField]
@@ -82,7 +106,8 @@ public class GunController : MonoBehaviour
     private void FireHitscan()
     {
         var random = Random.insideUnitCircle;
-        var rotation = Quaternion.Euler(_spread * random.x, _spread * random.y, 0.0f);
+        var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
+        var rotation = Quaternion.Euler(spread * random.x, spread * random.y, 0.0f);
         var forward = rotation * Vector3.forward;
         var ray = new Ray(_hardPoint.transform.position, _hardPoint.transform.TransformDirection(forward));
         if (Physics.Raycast(ray, out var hit, 1000.0f, _layerMaskHitScan, QueryTriggerInteraction.Ignore))
