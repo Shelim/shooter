@@ -13,6 +13,9 @@ public class GunController : MonoBehaviour
     [SerializeField]
     private Pool _muzzleFlashes;
 
+    [SerializeField]
+    private MaterialDefinitions _materialDefinitions;
+
     private float _delay;
 
     private void Start()
@@ -56,7 +59,7 @@ public class GunController : MonoBehaviour
     {
         var projectile = _projectileLinecasts.Grab(_hardPoint.transform);
         projectile.transform.SetParent(null, true);
-        projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts);
+        projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts, _materialDefinitions);
         var random = Random.insideUnitCircle;
         projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
     }
@@ -68,7 +71,7 @@ public class GunController : MonoBehaviour
     {
         var projectile = _projectileCapsules.Grab(_hardPoint.transform);
         projectile.transform.SetParent(null, true);
-        projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules);
+        projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules, _materialDefinitions);
         var random = Random.insideUnitCircle;
         projectile.transform.Rotate(_spread * random.x, _spread * random.y, 0.0f);
     }
@@ -84,7 +87,11 @@ public class GunController : MonoBehaviour
         var ray = new Ray(_hardPoint.transform.position, _hardPoint.transform.TransformDirection(forward));
         if (Physics.Raycast(ray, out var hit, 1000.0f, _layerMaskHitScan, QueryTriggerInteraction.Ignore))
         {
-            // Hit!
+            var madeWith = hit.collider.GetComponentInParent<MadeWith>();
+            if (madeWith != null)
+            {
+                _materialDefinitions.Hit(madeWith.Kind, hit.point, hit.normal);
+            }
         }
     }
 

@@ -12,10 +12,12 @@ public class ProjectileCapsule : MonoBehaviour
     private LayerMask _layerMask;
 
     private Pool _pool;
+    private MaterialDefinitions _materialDefinitions;
     private float _timeToLive;
 
-    public void Initialize(Pool pool)
+    public void Initialize(Pool pool, MaterialDefinitions materialDefinitions)
     {
+        _materialDefinitions = materialDefinitions;
         _pool = pool;
         _timeToLive = _lifetime;
     }
@@ -32,6 +34,12 @@ public class ProjectileCapsule : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        var madeWith = other.GetComponentInParent<MadeWith>();
+        if (madeWith != null)
+        {
+            _materialDefinitions.Hit(madeWith.Kind, transform.position, -transform.forward);
+        }
+
         _pool.Return(gameObject);
     }
 }

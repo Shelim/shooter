@@ -15,6 +15,7 @@ public class ProjectileLinecast : MonoBehaviour
     private LayerMask _layerMask;
 
     private Pool _pool;
+    private MaterialDefinitions _materialDefinitions;
     private float _timeToLive;
 
     private void Reset()
@@ -22,8 +23,9 @@ public class ProjectileLinecast : MonoBehaviour
         _trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    public void Initialize(Pool pool)
+    public void Initialize(Pool pool, MaterialDefinitions materialDefinitions)
     {
+        _materialDefinitions = materialDefinitions;
         _pool = pool;
         _timeToLive = _lifetime;
         if (_trailRenderer)
@@ -36,6 +38,11 @@ public class ProjectileLinecast : MonoBehaviour
         if (Physics.Linecast(transform.position, positionNext, out var hit, _layerMask, QueryTriggerInteraction.Ignore))
         {
             _pool.Return(gameObject);
+            var madeWith = hit.collider.GetComponentInParent<MadeWith>();
+            if (madeWith != null)
+            {
+                _materialDefinitions.Hit(madeWith.Kind, hit.point, hit.normal);
+            }
             return;
         }
         _timeToLive -= Time.deltaTime;
