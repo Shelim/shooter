@@ -81,9 +81,12 @@ public class GunController : MonoBehaviour
     {
         var projectile = _projectileLinecasts.Grab(_hardPoint.transform);
         projectile.transform.SetParent(null, true);
-        projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts, _materialDefinitions);
+        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         var random = Random.insideUnitCircle;
         var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
+        var rotation = Quaternion.Euler(spread * random.x, spread * random.y, 0.0f);
+        ray.direction = rotation * ray.direction;
+        projectile.GetComponent<ProjectileLinecast>().Initialize(_projectileLinecasts, _materialDefinitions, ray);
         projectile.transform.Rotate(spread * random.x, spread * random.y, 0.0f);
     }
 
@@ -94,9 +97,12 @@ public class GunController : MonoBehaviour
     {
         var projectile = _projectileCapsules.Grab(_hardPoint.transform);
         projectile.transform.SetParent(null, true);
-        projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules, _materialDefinitions);
+        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         var random = Random.insideUnitCircle;
         var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
+        var rotation = Quaternion.Euler(spread * random.x, spread * random.y, 0.0f);
+        ray.direction = rotation * ray.direction;
+        projectile.GetComponent<ProjectileCapsule>().Initialize(_projectileCapsules, _materialDefinitions, ray);
         projectile.transform.Rotate(spread * random.x, spread * random.y, 0.0f);
     }
 
@@ -109,7 +115,9 @@ public class GunController : MonoBehaviour
         var spread = Mathf.Lerp(_spreadMin, _spreadMax, _spreadProgress);
         var rotation = Quaternion.Euler(spread * random.x, spread * random.y, 0.0f);
         var forward = rotation * Vector3.forward;
-        var ray = new Ray(_hardPoint.transform.position, _hardPoint.transform.TransformDirection(forward));
+        //        var ray = new Ray(_hardPoint.transform.position, _hardPoint.transform.TransformDirection(forward));
+        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+        ray.direction = rotation * ray.direction;
         if (Physics.Raycast(ray, out var hit, 1000.0f, _layerMaskHitScan, QueryTriggerInteraction.Ignore))
         {
             var madeWith = hit.collider.GetComponentInParent<MadeWith>();

@@ -13,28 +13,37 @@ public class ProjectileLinecast : MonoBehaviour
     private float _lifetime = 5.0f;
     [SerializeField]
     private LayerMask _layerMask;
+    [SerializeField]
+    private float _followCrosshair = 0.125f;
 
     private Pool _pool;
     private MaterialDefinitions _materialDefinitions;
     private float _timeToLive;
+
+    private Ray _targetRay;
 
     private void Reset()
     {
         _trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    public void Initialize(Pool pool, MaterialDefinitions materialDefinitions)
+    public void Initialize(Pool pool, MaterialDefinitions materialDefinitions, Ray ray)
     {
         _materialDefinitions = materialDefinitions;
         _pool = pool;
         _timeToLive = _lifetime;
+        _targetRay = ray;
+
         if (_trailRenderer)
             _trailRenderer.Clear();
     }
 
     private void Update()
     {
-        var positionNext = transform.position + transform.forward * _speed * Time.deltaTime;
+        var positionBase = transform.position + transform.forward * _speed * Time.deltaTime;
+        _targetRay.origin += _targetRay.direction * _speed * Time.deltaTime;
+        var positionNext = Vector3.Lerp(positionBase, _targetRay.origin, Time.deltaTime / _followCrosshair);
+
         if (Physics.Linecast(transform.position, positionNext, out var hit, _layerMask, QueryTriggerInteraction.Ignore))
         {
             _pool.Return(gameObject);
