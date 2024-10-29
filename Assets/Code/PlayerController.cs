@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 _gravity = new Vector3(0.0f, -9.81f, 0.0f);
     [SerializeField, Tooltip("Assign child main camera")]
     private Camera _camera;
+    [SerializeField]
+    private BobController _bobController;
 
     private CharacterController _characterController;
     private Vector3 _velocityPlanar;
@@ -55,6 +57,8 @@ public class PlayerController : MonoBehaviour
             movementDesired.Normalize();
         }
 
+        _bobController.WalkingSpeed = movementDesired.magnitude;
+
         // Calculate final planar velocity and move actual velocity toward it
         _velocityPlanar = Vector3.MoveTowards(_velocityPlanar, movementDesired * _walkSpeed, _walkAcceleration * Time.deltaTime);
 
@@ -62,23 +66,31 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && _characterController.isGrounded)
         {
             _velocityGravity = new Vector3(0.0f, Mathf.Sqrt(_jumpHeight * _gravity.y * -2.0f), 0.0f);
+            _bobController.IsJumping = true;
         }
         // If not, we should start to fall
         if (!_characterController.isGrounded)
         {
             _velocityGravity += _gravity * Time.deltaTime;
+            if (_velocityGravity.y <= 0.0f)
+            {
+                _bobController.IsJumping = false;
+            }
         }
         // If we are grounded and not jumping, the gravity should not accumulate infinitely
         // But it also shouldn't be zero-ed, as you may be going down-slope
         else if (_velocityGravity.y <= 0.0f)
         {
-            _velocityGravity = _gravity * Time.deltaTime;
+            _velocityGravity = _gravity * 0.5f;
+            _bobController.IsJumping = false;
         }
 
         // The famous double-move of Unity character controller
         // The order is very important, as second move will populate isGrounded flag
         _characterController.Move(_velocityPlanar * Time.deltaTime);
         _characterController.Move(_velocityGravity * Time.deltaTime);
+
+        _bobController.IsGrounded = _characterController.isGrounded;
 
         // Look around with mouse
         _aizmuth += Input.GetAxis("Mouse X") * _lookSensivity;
